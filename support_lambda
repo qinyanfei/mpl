@@ -1,0 +1,133 @@
+#ifndef HI_MPL_SUPPORT_LAMBDA_H_INCLUDE
+#define HI_MPL_SUPPORT_LAMBDA_H_INCLUDE
+
+#define STRINGLIZE_CAT_TOKEN(s1, s2, token) s1##token##s2
+#define STRINGLIZE_CAT(s1, s2) s1##s2
+
+#define ENUM_SHIFTED_PARAMS_MPL(n, prefix)                      \
+	ENUM_SHIFTED_PARAMS_MPL_##n(prefix)
+
+#define ENUM_SHIFTED_PARAMS_MPL_1(prefix) prefix##1
+#define ENUM_SHIFTED_PARAMS_MPL_2(prefix) prefix##1, prefix##2
+#define ENUM_SHIFTED_PARAMS_MPL_3(prefix) prefix##1, prefix##2, prefix##3
+#define ENUM_SHIFTED_PARAMS_MPL_4(prefix) prefix##1, prefix##2, prefix##3, prefix##4
+#define ENUM_SHIFTED_PARAMS_MPL_5(prefix) prefix##1, prefix##2, prefix##3, prefix##4, prefix##5
+
+
+#define SUPPORT_LAMBDA_1_IMPL(classname, A1)                        \
+	template<>                                                      \
+    struct classname##< A1 >                                        \
+	{                                                               \
+	    template<typename... TList>                                 \
+        struct apply                                                \
+	    {                                                           \
+		    using type = typename classname##<                      \
+            typename A1::apply<TList...>::type>::type;              \
+	    };                                                          \
+	};
+
+#define SUPPORT_LAMBDA_2_IMPL(classname, A1, A2)						    \
+	template<>																\
+    struct classname##< A1, A2 >                                            \
+	{                                                                       \
+		template<typename... TList>											\
+		struct apply														\
+		{																	\
+			using type = typename classname##<								\
+			   typename A1::apply<TList...>::type,				            \
+               typename A2::apply<TList...>::type>::type;			        \
+		};																	\
+	};
+
+#define SUPPORT_LAMBDA_3_IMPL(classname, A1, A2, A3)						\
+	template<>																\
+    struct classname##< A1, A2, A3 >						                \
+	{																		\
+		template<typename... TList>											\
+		struct apply														\
+		{																	\
+			using type = typename classname##<								\
+			   typename A1::apply<TList...>::type,				            \
+			   typename A2::apply<TList...>::type,							\
+			   typename A3::apply<TList...>::type>::type;			        \
+		};																	\
+	};
+
+#define SUPPORT_LAMBDA_4_IMPL(classname, A1, A2, A3, A4)					\
+	template<>																\
+    struct classname##< A1, A2, A3, A4 >					                \
+	{																		\
+		template<typename... TList>											\
+		struct apply													    \
+		{																	\
+			using type = typename classname##<								\
+			   typename A1::apply<TList...>::type,				            \
+			   typename A2::apply<TList...>::type,							\
+			   typename A3::apply<TList...>::type							\
+			   typename A4::apply<TList...>::type>::type;			        \
+		};																	\
+	};
+
+#define SUPPORT_LAMBDA_5_IMPL(classname, A1, A2, A3, A4, A5)				\
+	template<>																\
+    struct classname##< A1, A2, A3, A4, A5 >				                \
+	{																		\
+		template<typename... TList>											\
+		struct apply														\
+		{																	\
+			using type = typename classname##<								\
+			   typename A1::apply<TList...>::type,				            \
+			   typename A2::apply<TList...>::type,							\
+			   typename A3::apply<TList...>::type							\
+			   typename A4::apply<TList...>::type							\
+			   typename A5::apply<TList...>::type>::type;			        \
+		};																	\
+	};
+
+
+#define SUPPORT_LAMBDA_1(classname, P)                            \
+	SUPPORT_LAMBDA_1_IMPL(classname, P##1)
+
+#define SUPPORT_LAMBDA_2(classname, P)					          \
+			SUPPORT_LAMBDA_2_IMPL(classname, P##1, P##2)          \
+			SUPPORT_LAMBDA_2_IMPL(classname, P##2, P##1)
+
+#define SUPPORT_LAMBDA_3(classname, P)					          \
+	SUPPORT_LAMBDA_3_IMPL(classname, P##1, P##2, P##3)            \
+    SUPPORT_LAMBDA_3_IMPL(classname, P##1, P##3, P##2)            \
+    SUPPORT_LAMBDA_3_IMPL(classname, P##2, P##1, P##3)            \
+    SUPPORT_LAMBDA_3_IMPL(classname, P##2, P##3, P##1)            \
+    SUPPORT_LAMBDA_3_IMPL(classname, P##3, P##1, P##2)            \
+    SUPPORT_LAMBDA_3_IMPL(classname, P##3, P##2, P##1)
+
+#define SUPPORT_LAMBDA_4(classname, P)					                \
+	SUPPORT_LAMBDA_4_IMPL(classname, P##1, P##2, P##3, P##4)            \
+    SUPPORT_LAMBDA_4_IMPL(classname, P##1, P##2, P##4, P##3)            \
+    SUPPORT_LAMBDA_4_IMPL(classname, P##1, P##3, P##2, P##4)            \
+	SUPPORT_LAMBDA_4_IMPL(classname, P##1, P##3, P##4, P##2)            \
+	SUPPORT_LAMBDA_4_IMPL(classname, P##1, P##4, P##3, P##2)            \
+	SUPPORT_LAMBDA_4_IMPL(classname, P##1, P##4, P##2, P##3)            \
+	SUPPORT_LAMBDA_4_IMPL(classname, P##2, P##1, P##3, P##4)            \
+	SUPPORT_LAMBDA_4_IMPL(classname, P##2, P##1, P##4, P##3)            \
+	SUPPORT_LAMBDA_4_IMPL(classname, P##2, P##3, P##1, P##4)            \
+	SUPPORT_LAMBDA_4_IMPL(classname, P##2, P##3, P##4, P##1)            \
+	SUPPORT_LAMBDA_4_IMPL(classname, P##2, P##4, P##1, P##3)            \
+	SUPPORT_LAMBDA_4_IMPL(classname, P##2, P##4, P##3, P##1)            \
+	SUPPORT_LAMBDA_4_IMPL(classname, P##3, P##1, P##2, P##4)            \
+	SUPPORT_LAMBDA_4_IMPL(classname, P##3, P##1, P##4, P##2)            \
+	SUPPORT_LAMBDA_4_IMPL(classname, P##3, P##2, P##1, P##4)            \
+	SUPPORT_LAMBDA_4_IMPL(classname, P##3, P##2, P##4, P##1)            \
+	SUPPORT_LAMBDA_4_IMPL(classname, P##3, P##4, P##1, P##2)            \
+	SUPPORT_LAMBDA_4_IMPL(classname, P##3, P##4, P##2, P##1)            \
+	SUPPORT_LAMBDA_4_IMPL(classname, P##4, P##1, P##2, P##3)            \
+	SUPPORT_LAMBDA_4_IMPL(classname, P##4, P##1, P##3, P##2)            \
+	SUPPORT_LAMBDA_4_IMPL(classname, P##4, P##2, P##1, P##3)            \
+	SUPPORT_LAMBDA_4_IMPL(classname, P##4, P##2, P##3, P##1)            \
+	SUPPORT_LAMBDA_4_IMPL(classname, P##4, P##3, P##1, P##2)            \
+	SUPPORT_LAMBDA_4_IMPL(classname, P##4, P##3, P##2, P##1)
+
+
+#define SUPPORT_LAMBDA(classname, n, prefix)                     \
+    SUPPORT_LAMBDA_##n(classname, prefix)
+
+#endif
