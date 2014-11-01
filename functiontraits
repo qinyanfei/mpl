@@ -1,0 +1,164 @@
+#ifndef HI_MPL_FUNCTIONTRAITS_H_INCLUDED
+#define HI_MPL_FUNCTIONTRAITS_H_INCLUDED
+
+#include "TypeList.h"
+
+namespace hi { namespace mpl {
+
+    template<typename T>
+    struct function_traits;
+
+    template<typename R, typename... Args>
+    struct function_traits<R (Args...)>
+    {
+        typedef R return_type;
+        typedef typelist<Args...> arglist;
+        enum { arg_count = sizeof...(Args) };
+        template<unsigned int N>
+        struct arg
+        {
+            typedef typename at<N, arglist>::type type;
+        };
+    };
+
+    template<typename R, typename... Args>
+    struct function_traits<R (Args...) const>
+    {
+        typedef R return_type;
+        typedef typelist<Args...> arglist;
+        enum { arg_count = sizeof...(Args) };
+        template<unsigned int N>
+        struct arg
+        {
+            typedef typename at<N, arglist>::type type;
+        };
+    };
+
+    template<typename R, typename... Args>
+    struct function_traits<R (Args...) volatile>
+    {
+        typedef R return_type;
+        typedef typelist<Args...> arglist;
+        enum { arg_count = sizeof...(Args) };
+        template<unsigned int N>
+        struct arg
+        {
+            typedef typename at<N, arglist>::type type;
+        };
+    };
+
+    template<typename R, typename... Args>
+    struct function_traits<R (Args...) const volatile>
+    {
+        typedef R return_type;
+        typedef typelist<Args...> arglist;
+        enum { arg_count = sizeof...(Args) };
+        template<unsigned int N>
+        struct arg
+        {
+            typedef typename at<N, arglist>::type type;
+        };
+    };
+
+    template<typename R, typename... Args>
+    struct function_traits<R (*)(Args...)>
+    {
+        typedef R return_type;
+        typedef typelist<Args...> arglist;
+        enum { arg_count = sizeof...(Args) };
+        template<unsigned int N>
+        struct arg
+        {
+            typedef typename at<N, arglist>::type type;
+        };
+    };
+
+
+
+
+    template <typename R, typename T, typename... Args>
+    struct function_traits<R (T::*)(Args...)>
+    {
+        typedef T class_type;
+        typedef R return_type;
+        typedef typelist<Args...> arglist;
+        enum { arg_count = sizeof...(Args) };
+        template<unsigned int N>
+        struct arg
+        {
+            typedef typename at<N, arglist>::type type;
+        };
+    };
+
+
+    template <typename R, typename T, typename... Args>
+    struct function_traits<R (T::*)(Args...) const>
+    {
+        typedef T class_type;
+        typedef R return_type;
+        typedef typelist<Args...> arglist;
+        enum { arg_count = sizeof...(Args) };
+        template<unsigned int N>
+        struct arg
+        {
+            typedef typename at<N, arglist>::type type;
+        };
+    };
+
+    template <typename R, typename T, typename... Args>
+    struct function_traits<R (T::*)(Args...) volatile>
+    {
+        typedef T class_type;
+        typedef R return_type;
+        typedef typelist<Args...> arglist;
+        enum { arg_count = sizeof...(Args) };
+        template<unsigned int N>
+        struct arg
+        {
+            typedef typename at<N, arglist>::type type;
+        };
+    };
+
+    template <typename R, typename T, typename... Args>
+    struct function_traits<R (T::*)(Args...) const volatile>
+    {
+        typedef T class_type;
+        typedef R return_type;
+        typedef typelist<Args...> arglist;
+        enum { arg_count = sizeof...(Args) };
+        template<unsigned int N>
+        struct arg
+        {
+            typedef typename at<N, arglist>::type type;
+        };
+    };
+
+    namespace Private
+    {
+
+        template<typename Func, typename... Args>
+        auto IIWrapper(Func func, Args&&... args) -> decltype(func(std::forward<Args>(args)...))
+        {
+            return func(std::forward<Args>(args)...);
+        }
+
+//        template<typename ...Args>
+//        struct OverloadResolved
+//        {
+//                template<typename R>
+//                static auto static_doit( R (*f) (Args...), Args ... args ) -> R { return f(args...);}
+//        };
+//
+//        template<typename ...Args>
+//        auto deduce(Args...) -> OverloadResolved<Args...> { return OverloadResolved<Args...>(); }
+//
+//        template<typename T>
+//        struct dummy : public T { };
+//
+//        #define doit(f, ...) ( dummy<decltype(deduce( __VA_ARGS__ ))> :: static_doit(f, __VA_ARGS__) )
+    }
+}
+
+}
+
+#endif // HI_MPL_FUNCTIONTRAITS_H_INCLUDED
