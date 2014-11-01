@@ -1,0 +1,54 @@
+#ifndef HI_MPL_PLACEHOLDERS_H_INCLUDED
+#define HI_MPL_PLACEHOLDERS_H_INCLUDED
+
+//////////////////////////////////////////////////////////////////////
+namespace hi { namespace mpl {
+	
+	template<class MetaFuncClass, class... ArgTypes>
+	struct apply
+	{
+		using type = typename MetaFuncClass:: template apply<ArgTypes...>::type;
+	};
+
+	//surport palceholders is too painful 
+	namespace placeholders
+	{
+		namespace helper 
+		{
+			template<typename... TList> struct arglist { };
+			typedef arglist<> nullargs;
+
+			template<unsigned int N, typename... TList> struct at;
+
+			template<unsigned int N, typename T, typename... TList>
+			struct at< N, arglist<T, TList...> >
+			{
+				typedef typename at< N - 1, arglist<TList...> >::type type;
+			};
+
+			template<typename T, typename... TList>
+			struct at< 0, arglist<T, TList...> >
+			{
+				typedef T type;
+			};
+		} // end of placeholders::helper
+
+		template<int n> struct Arg
+		{
+			template<typename ... TList>
+			struct apply
+			{
+				using type = typename helper::at<n-1, helper::arglist<TList...> >::type;
+			};
+
+		};
+
+		using _1 = Arg<1>;
+		using _2 = Arg<2>;
+		using _3 = Arg<3>;
+		using _4 = Arg<4>;
+	} // end of placeholders
+
+}
+}
+#endif
