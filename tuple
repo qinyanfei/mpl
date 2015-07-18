@@ -1,0 +1,99 @@
+  //////////////////////////////////////////////////////////
+    template<typename... TList> struct tuple;
+
+    template<> struct tuple<> {};
+
+    typedef tuple<> nulltuple;
+
+
+    //////////////////////////////////////////////////////////
+    template<typename T, typename... TList>
+    struct tuple<T, TList...> : public tuple<TList...>
+    {
+        typedef T value_type;
+        typedef tuple<TList...> base_type;
+        typedef tuple<T, TList...> this_type;
+
+        tuple() {}
+        tuple(T v, TList... tails):base_type(tails...),_value(v) {}
+
+        const T& head() const { return this->_value; }
+        T& head() { return this->_value; }
+        this_type& operator=(const this_type& other)
+        {
+            _value = other._value;
+            base_type::operator=(static_cast<const base_type&>(other));
+            return *this;
+        }
+
+    protected:
+        T _value;
+    };
+
+    template<typename T>
+    struct tuple<T> : public nulltuple
+    {
+        typedef T value_type;
+        typedef nulltuple base_type;
+        typedef tuple<T> this_type;
+
+        tuple() {}
+        tuple(T v):_value(v) {}
+
+        const T& head() const { return this->_value; }
+        T& head() { return this->_value; }
+        this_type& operator=(const this_type& other)
+        {
+            _value = other._value;
+            return *this;
+        }
+
+    protected:
+        T _value;
+    };
+
+
+    //////////////////////////////////////////////////////////
+    template<unsigned int N, typename... TList> struct tuple_at;
+
+    template<unsigned int N, typename T, typename... TList>
+    struct tuple_at< N, tuple<T, TList...> >
+    {
+        typedef typename tuple_at< N-1, tuple<TList...> >::value_type value_type;
+        typedef typename tuple_at< N-1, tuple<TList...> >::tuple_type tuple_type;
+    };
+
+    template<typename T, typename... TList>
+    struct tuple_at< 0, tuple<T, TList...> >
+    {
+        typedef T value_type;
+        typedef tuple<T, TList...> tuple_type;
+    };
+
+    template<>
+    struct tuple_at<0, nulltuple>
+    {
+        typedef nulltuple value_type;
+        typedef nulltuple tuple_type;
+    };
+
+    //////////////////////////////////////////////////////////
+    template<unsigned int N, typename... TList>
+    constexpr const typename tuple_at<N, tuple<TList...> >::value_type&
+    tuple_get(const tuple<TList...>& tuple_)
+    {
+        typedef tuple<TList...> tuple_type;
+        typedef typename tuple_at<N, tuple_type>::tuple_type base_tuple_type;
+
+        return static_cast<const base_tuple_type&>(tuple_).head();
+    }
+
+    template<unsigned int N, typename... TList>
+    typename tuple_at<N, tuple<TList...> >::value_type&
+    tuple_get(tuple<TList...>& tuple_)
+    {
+        typedef tuple<TList...> tuple_type;
+        typedef typename tuple_at<N, tuple_type>::tuple_type base_tuple_type;
+
+        return static_cast<base_tuple_type&>(tuple_).head();
+    }
